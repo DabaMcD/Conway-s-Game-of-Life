@@ -15,6 +15,7 @@ class Touch {
                     case MotionEvent.ACTION_MOVE:
                         break;
                     case MotionEvent.ACTION_UP:
+                        gameView.actionUp(event.getX(), event.getY());
                         break;
                 }
                 return true;
