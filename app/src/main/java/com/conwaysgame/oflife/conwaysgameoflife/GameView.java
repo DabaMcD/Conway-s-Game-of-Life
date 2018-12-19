@@ -18,10 +18,11 @@ public class GameView extends View {
     // Rule 4. Any dead cell with exactly three live neighbors becomes a live cell, as if by reproduction.
 
     // For now, this game is only screen wide and high. I may change that later.
-    // Also for now, every cell is 10px by 10px
+    // Also for now, every cell is 20px by 20px
     private final int cellSize = 20;
     private ArrayList<ArrayList<Cell>> cells;
     private Paint paint;
+    private boolean generating = false;
 
     public GameView(Context context) {
         super(context);
@@ -40,27 +41,13 @@ public class GameView extends View {
                 cells.get(cells.size() - 1).add(new Cell());
             }
         }
-        cells.get(30).get(30).alive = true;
-        cells.get(30).get(30).shouldBeAlive = true;
-
-        cells.get(32).get(30).alive = true;
-        cells.get(32).get(30).shouldBeAlive = true;
-
-        cells.get(30).get(31).alive = true;
-        cells.get(30).get(31).shouldBeAlive = true;
-
-        cells.get(31).get(31).alive = true;
-        cells.get(31).get(31).shouldBeAlive = true;
-
-        cells.get(29).get(30).alive = true;
-        cells.get(29).get(30).shouldBeAlive = true;
-
-        cells.get(28).get(30).alive = true;
-        cells.get(28).get(30).shouldBeAlive = true;
         paint = new Paint();
     }
     @Override
     protected void onDraw(Canvas canvas) {
+        if(generating) {
+            generateGeneration();
+        }
         paint.setColor(Color.WHITE);
         canvas.drawPaint(paint);
         paint.setColor(Color.BLACK);
@@ -70,10 +57,15 @@ public class GameView extends View {
                     canvas.drawRect(x * cellSize, y * cellSize, (x + 1) * cellSize, (y + 1) * cellSize, paint);
                 }
             }
-            canvas.drawLine(x * cellSize, 0, x * cellSize, Screen.height, paint);
-            canvas.drawLine(0, x * cellSize, Screen.width, x * cellSize, paint);
         }
-
+        int maxScreenDim = Math.max(Screen.width, Screen.height);
+        for(int i = 0; i < maxScreenDim; i += cellSize) {
+            canvas.drawLine(i, 0, i, Screen.height, paint);
+            canvas.drawLine(0, i, Screen.width, i, paint);
+        }
+        if(generating) {
+            paint.setColor(Color.BLUE);
+        }
         canvas.drawRect(0, 0, 50, 50, paint);
 
         super.onDraw(canvas);
@@ -192,14 +184,15 @@ public class GameView extends View {
     }
     void actionUp(float touchX, float touchY) {
         if(touchX < 50 && touchY < 50) {
-            generateGeneration();
+//            generateGeneration();
+            generating = !generating;
         } else {
-            if (cells.get((int) Math.floor(touchX / 10)).get((int) Math.floor(touchY / 10)).alive) {
-                cells.get((int) Math.floor(touchX / 10)).get((int) Math.floor(touchY / 10)).alive = false;
-                cells.get((int) Math.floor(touchX / 10)).get((int) Math.floor(touchY / 10)).shouldBeAlive = false;
+            if (cells.get((int) Math.floor(touchX / cellSize)).get((int) Math.floor(touchY / cellSize)).alive) {
+                cells.get((int) Math.floor(touchX / cellSize)).get((int) Math.floor(touchY / cellSize)).alive = false;
+                cells.get((int) Math.floor(touchX / cellSize)).get((int) Math.floor(touchY / cellSize)).shouldBeAlive = false;
             } else {
-                cells.get((int) Math.floor(touchX / 10)).get((int) Math.floor(touchY / 10)).alive = true;
-                cells.get((int) Math.floor(touchX / 10)).get((int) Math.floor(touchY / 10)).shouldBeAlive = true;
+                cells.get((int) Math.floor(touchX / cellSize)).get((int) Math.floor(touchY / cellSize)).alive = true;
+                cells.get((int) Math.floor(touchX / cellSize)).get((int) Math.floor(touchY / cellSize)).shouldBeAlive = true;
             }
         }
     }

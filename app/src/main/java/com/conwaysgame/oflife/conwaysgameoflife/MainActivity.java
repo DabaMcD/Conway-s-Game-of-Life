@@ -1,8 +1,10 @@
 package com.conwaysgame.oflife.conwaysgameoflife;
 
+import android.content.res.Configuration;
 import android.graphics.Point;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Display;
 
 public class MainActivity extends AppCompatActivity {
@@ -34,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
                                 gameView.draw();
                             }
                         });
-                        long waitTime = prevMillis - System.currentTimeMillis() + 17;
+                        long waitTime = prevMillis - System.currentTimeMillis() + 100;
                         if(waitTime > 0) {
                             Thread.sleep(waitTime);
                         }
