@@ -85,11 +85,11 @@ public class GameView extends View {
         canvas.drawRect(Screen.width - buttonSize, Screen.height - buttonSize, Screen.width, Screen.height, paint);
 
         paint.setColor(Color.BLACK);
-        canvas.drawText("s/s", buttonSize / 2, buttonSize / 2 - paint.getTextSize(), paint);
-        canvas.drawText("s", buttonSize / 2, Screen.height - buttonSize - paint.getTextSize(), paint);
-        canvas.drawText("f", Screen.width - buttonSize, Screen.height - buttonSize - paint.getTextSize(), paint);
+        canvas.drawText("s/s", buttonSize / 2, paint.getTextSize() / 3 + buttonSize / 2, paint);
+        canvas.drawText("s", buttonSize / 2, paint.getTextSize() / 3 + Screen.height - buttonSize, paint);
+        canvas.drawText("f", Screen.width - buttonSize, paint.getTextSize() / 3 + Screen.height - buttonSize, paint);
 
-        canvas.drawText("FPS: " + fps, Screen.width / 2, Screen.height - buttonSize / 2 - paint.getTextSize(), paint);
+        canvas.drawText("FPS: " + Math.round(fps * 100d) / 100d, Screen.width / 2, (Screen.height - (buttonSize / 2)) + (paint.getTextSize() / 3), paint);
 
         super.onDraw(canvas);
     }
