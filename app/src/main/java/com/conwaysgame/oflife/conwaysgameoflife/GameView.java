@@ -23,6 +23,9 @@ public class GameView extends View {
     private ArrayList<ArrayList<Cell>> cells;
     private Paint paint;
     private boolean generating = false;
+    float speed;
+    double fps;
+    int buttonSize;
 
     public GameView(Context context) {
         super(context);
@@ -41,7 +44,13 @@ public class GameView extends View {
                 cells.get(cells.size() - 1).add(new Cell());
             }
         }
+        speed = 100;
+        fps = 1000/speed;
+        buttonSize = Math.min(Screen.height, Screen.width) / 10;
         paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setTextAlign(Paint.Align.CENTER);
+        paint.setTextSize(buttonSize * 2 / 3);
     }
     @Override
     protected void onDraw(Canvas canvas) {
@@ -64,9 +73,23 @@ public class GameView extends View {
             canvas.drawLine(0, i, Screen.width, i, paint);
         }
         if(generating) {
-            paint.setColor(Color.BLUE);
+            paint.setColor(Color.GREEN);
+        } else {
+            paint.setColor(Color.LTGRAY);
         }
-        canvas.drawRect(0, 0, 50, 50, paint);
+
+        canvas.drawRect(0, 0, buttonSize, buttonSize, paint);
+        paint.setColor(Color.BLUE);
+        canvas.drawRect(0, Screen.height - buttonSize, buttonSize, Screen.height, paint);
+        paint.setColor(Color.RED);
+        canvas.drawRect(Screen.width - buttonSize, Screen.height - buttonSize, Screen.width, Screen.height, paint);
+
+        paint.setColor(Color.BLACK);
+        canvas.drawText("s/s", buttonSize / 2, buttonSize / 2 - paint.getTextSize(), paint);
+        canvas.drawText("s", buttonSize / 2, Screen.height - buttonSize - paint.getTextSize(), paint);
+        canvas.drawText("f", Screen.width - buttonSize, Screen.height - buttonSize - paint.getTextSize(), paint);
+
+        canvas.drawText("FPS: " + fps, Screen.width / 2, Screen.height - buttonSize / 2 - paint.getTextSize(), paint);
 
         super.onDraw(canvas);
     }
@@ -79,11 +102,9 @@ public class GameView extends View {
         for(int x = 0; x < cells.size(); x ++) {
             for(int y = 0; y < cells.get(x).size(); y ++) {
                 if(!rule1(x, y)) {
-//                    if (!rule2(x, y)) { // This rule is done automatically.
-                        if (!rule3(x, y)) {
-                            rule4(x, y);
-                        }
-//                    }
+                    if (!rule3(x, y)) {
+                        rule4(x, y);
+                    }
                 }
             }
         }
@@ -119,6 +140,7 @@ public class GameView extends View {
 
         if(!cells.get(x).get(y).alive && numLiveNeighbors(x, y) == 3) {
             cells.get(x).get(y).shouldBeAlive = true;
+            return true;
         }
         return false;
     }
@@ -182,10 +204,17 @@ public class GameView extends View {
         }
         return rtrn;
     }
+    private void setFps(double FPS) {
+        fps = FPS;
+        speed = (int) (1000 / fps);
+    }
     void actionUp(float touchX, float touchY) {
-        if(touchX < 50 && touchY < 50) {
-//            generateGeneration();
+        if(touchX < buttonSize && touchY < buttonSize) {
             generating = !generating;
+        } else if(touchX < buttonSize && touchY > Screen.height - buttonSize) {
+            setFps(fps * 4 / 5);
+        } else if(touchX > Screen.width - buttonSize && touchY > Screen.height - buttonSize) {
+            setFps(fps * 5 / 4);
         } else {
             if (cells.get((int) Math.floor(touchX / cellSize)).get((int) Math.floor(touchY / cellSize)).alive) {
                 cells.get((int) Math.floor(touchX / cellSize)).get((int) Math.floor(touchY / cellSize)).alive = false;
