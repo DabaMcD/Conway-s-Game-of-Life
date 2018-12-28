@@ -17,12 +17,15 @@ public class GameView extends View {
     // Rule 3. Any live cell with more than three live neighbors dies, as if by overpopulation.
     // Rule 4. Any dead cell with exactly three live neighbors becomes a live cell, as if by reproduction.
 
+    // todo: do a test to make sure that alive and shouldbealive are always the same except when generating or from human manipulation.
+
     // For now, this game is only screen wide and high. I may change that later.
     // Also for now, every cell is 20px by 20px
     private final int cellSize = 20;
     private ArrayList<ArrayList<Cell>> cells;
     private Paint paint;
     private boolean generating = false;
+    private int gridShiftX, gridShiftY;
     float speed;
     double fps;
     int buttonSize;
@@ -63,7 +66,7 @@ public class GameView extends View {
         for(int x = 0; x < cells.size(); x ++) {
             for (int y = 0; y < cells.get(x).size(); y++) {
                 if(cells.get(x).get(y).alive) {
-                    canvas.drawRect(x * cellSize, y * cellSize, (x + 1) * cellSize, (y + 1) * cellSize, paint);
+                    canvas.drawRect(x * cellSize + gridShiftX, y * cellSize + gridShiftY, (x + 1) * cellSize, (y + 1) * cellSize, paint);
                 }
             }
         }
@@ -112,6 +115,57 @@ public class GameView extends View {
         // Kill cells that should be dead, spawn cells that should spawn
         for(int x = 0; x < cells.size(); x ++) {
             for (int y = 0; y < cells.get(x).size(); y++) {
+                cells.get(x).get(y).alive = cells.get(x).get(y).shouldBeAlive;
+            }
+        }
+    }
+    void shiftGridRight() {
+//        cells.add(new ArrayList<Cell>());
+//        for(int x = 0; x < cells.size() - 1; x ++) {
+//            for(int y = 0; y < cells.get(x).size(); y ++) {
+//                cells.get(x + 1).get(y).shouldBeAlive = cells.get(x).get(y).alive;
+//            }
+//        }
+//        for(int x = 0; x < cells.size(); x ++) {
+//            for(int y = 0; y < cells.get(x).size(); y ++) {
+//                cells.get(x).get(y).alive = cells.get(x).get(y).shouldBeAlive;
+//            }
+//        }
+        cells.add(0, new ArrayList<Cell>());
+        for(int y = 0; y < cells.get(1).size(); y ++) {
+            cells.get(0).add(new Cell());
+        }
+    }
+    void shiftGridDown() {
+        for(int x = 0; x < cells.size(); x ++) {
+            cells.get(x).add(0, new Cell());
+        }
+    }
+    void shiftGridLeft() {
+        cells.add(0, new ArrayList<Cell>());
+        for(int y = 0; y < cells.get(1).size(); y ++) {
+            cells.get(0).add(new Cell());
+        }
+        for(int x = 1; x < cells.size(); x ++) {
+            for(int y = 0; y < cells.get(x).size(); y ++) {
+                cells.get(x - 1).get(y).shouldBeAlive = cells.get(x).get(y).alive;
+            }
+        }
+        for(int x = 0; x < cells.size(); x ++) {
+            for(int y = 0; y < cells.get(x).size(); y ++) {
+                cells.get(x).get(y).alive = cells.get(x).get(y).shouldBeAlive;
+            }
+        }
+    }
+    void shiftGridUp() {
+        cells.add(0, new ArrayList<Cell>());
+        for(int x = 0; x < cells.size(); x ++) {
+            for(int y = 1; y < cells.get(x).size(); y ++) {
+                cells.get(x).get(y - 1).shouldBeAlive = cells.get(x).get(y).alive;
+            }
+        }
+        for(int x = 0; x < cells.size(); x ++) {
+            for(int y = 0; y < cells.get(x).size(); y ++) {
                 cells.get(x).get(y).alive = cells.get(x).get(y).shouldBeAlive;
             }
         }
